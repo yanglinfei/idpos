@@ -11,7 +11,6 @@ public class ConsensusService {
     private ConsensusContext consensusContext;
     private ContractVerify contractVerify;
 
-
     private boolean addTransaction(Transaction transaction) {
         return true;
     }
