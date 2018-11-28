@@ -1,5 +1,7 @@
 package com.rushay.idpos.network;
 
+import com.rushay.idpos.data.BlockChain;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,6 +19,7 @@ public class Node {
 
     private final int id;
     private final boolean badNode;
+    private BlockChain blockChain;
     private Map<Integer, Peer> peers;
     private int port;
     private ServerSocket socket;
@@ -25,7 +28,7 @@ public class Node {
         this.id = id;
         this.badNode = badNode;
         this.port = port;
-
+        this.blockChain = new BlockChain();
         start();
     }
 

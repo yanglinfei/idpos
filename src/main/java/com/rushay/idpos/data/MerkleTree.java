@@ -3,8 +3,7 @@ package com.rushay.idpos.data;
 import com.rushay.idpos.transaction.Transaction;
 import com.rushay.idpos.util.CryptologyUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @description: Merkle树
@@ -12,14 +11,11 @@ import java.util.List;
  * @create: 2018-11-27 21:23
  **/
 public class MerkleTree {
-    private List<String> tree;
+    private Set<String> tree;
     private String root;
 
-    public MerkleTree(List<Transaction> transactions) {
-        tree = new ArrayList<>();
-        for (int i = 0; i < transactions.size(); i++) {
-            tree.add(transactions.get(i).getHash());
-        }
+    public MerkleTree(Map<String, Transaction> transactions) {
+        tree = new HashSet<>(transactions.keySet());
         root = "";
     }
 
@@ -27,9 +23,7 @@ public class MerkleTree {
         if (tree.isEmpty()) {
             return null;
         }
-        if (tree.size() == 1) {
-            return tree.get(0);
-        }
+
         List<String> tempTxs = new ArrayList<>();
         tempTxs.addAll(tree);
 

@@ -5,7 +5,7 @@ package com.rushay.idpos.data;/**
 import com.rushay.idpos.transaction.Transaction;
 import com.rushay.idpos.util.CryptologyUtil;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @description: 区块数据结构
@@ -16,13 +16,13 @@ public class Block {
     private int height;
     private long timeStamp;
     private int size;
-    private List<Transaction> transactions;
+    private Map<String, Transaction> transactions;
     private String preHash;
     private String hash;
     private MerkleTree merkleTree;
 
 
-    public Block(int height , List<Transaction> transactions, String preHash)
+    public Block(int height, Map<String, Transaction> transactions, String preHash)
             throws BlockConstructorException {
         if (transactions == null || transactions.isEmpty()) {
             throw new BlockConstructorException();
@@ -58,7 +58,7 @@ public class Block {
         return size;
     }
 
-    public List<Transaction> getTransactions() {
+    public Map<String, Transaction> getTransactions() {
         return transactions;
     }
 
@@ -72,6 +72,10 @@ public class Block {
 
     public MerkleTree getMerkleTree() {
         return merkleTree;
+    }
+
+    public boolean hasTransaction(String hash) {
+        return transactions.get(hash) != null;
     }
 
     public class BlockConstructorException extends Exception {
