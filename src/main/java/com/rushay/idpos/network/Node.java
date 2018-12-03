@@ -1,5 +1,6 @@
 package com.rushay.idpos.network;
 
+import com.rushay.idpos.consensus.ConsensusMessage;
 import com.rushay.idpos.data.BlockChain;
 
 import java.io.IOException;
@@ -49,6 +50,10 @@ public class Node {
         private int dstNode;
         private Socket socket;
         private Task task;
+    }
+
+    public void broadcast(ConsensusMessage message) {
+
     }
 
     private class Task implements Runnable {
