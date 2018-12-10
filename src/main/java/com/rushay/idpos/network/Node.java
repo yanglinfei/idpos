@@ -52,6 +52,26 @@ public class Node {
         private Task task;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public boolean isBadNode() {
+        return badNode;
+    }
+
+    public BlockChain getBlockChain() {
+        return blockChain;
+    }
+
+    public Map<Integer, Peer> getPeers() {
+        return peers;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
     public void broadcast(ConsensusMessage message) {
 
     }

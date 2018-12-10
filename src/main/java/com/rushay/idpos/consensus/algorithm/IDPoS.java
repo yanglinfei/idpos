@@ -9,7 +9,9 @@ import com.rushay.idpos.data.BlockChain;
 import com.rushay.idpos.network.Node;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 对DPOS进行改进，添加PBFT的共识步骤
@@ -22,11 +24,14 @@ public class IDPoS {
     BlockChain blockChain;
     Node node;
     Map<String, Block> pendingBlocks = new HashMap<>();
+
     State state = State.NONE;
     CommitMessage commitMessage;
     PrepareMessage prepareMessage;
     Map<String, CommitMessage> commitHashCache = new HashMap<>();
     Map<String, PrepareMessage> prepareHashCache = new HashMap<>();
+    ConsensusInfo consensusInfo = new ConsensusInfo();
+
 
     public IDPoS(BlockChain blockChain, Node node) {
         this.blockChain = blockChain;
@@ -76,6 +81,36 @@ public class IDPoS {
     }
 
     private void processPrepareMessage(ConsensusMessage message) {
+        ConsensusMessage.MessageBody body = message.getBody();
+        String key = body.toString();
+
+        if (prepareHashCache.containsKey(key)) {
+            return;
+        }
+
+        prepareHashCache.put(key, (PrepareMessage) message);
+        this.node.broadcast(message);
+
+        if (this.state == State.PREPARE &&
+                this.consensusInfo.height == body.getHeight() &&
+                this.consensusInfo.hash == body.getHash() &&
+                !this.consensusInfo.signers.contains(body.getSigner())) {
+            this.consensusInfo.signers.add(body.getSigner());
+            this.consensusInfo.voteNumber++;
+
+            System.out.printf("pbft %d prepare vote: %s", this.node.getId(), this.consensusInfo.voteNumber);
+
+            if (this.consensusInfo.voteNumber > PBFT_F) {
+                System.out.printf("node %d change state to commit", this.node.getId());
+
+                this.state = State.COMMIT;
+                ConsensusInfo commitInfo = new ConsensusInfo();
+                commitInfo.voteNumber = 1;
+                commitInfo.height = this.consensusInfo.height;
+                commitInfo.hash = this.consensusInfo.hash;
+                consensusInfo.signers.add(this.node.getId());
+            }
+        }
 
     }
     private void processCommitMessage(ConsensusMessage message) {
@@ -91,5 +126,12 @@ public class IDPoS {
         State(int code){
             this.code = code;
         }
+    }
+
+    private class ConsensusInfo {
+        public long height;
+        public String hash;
+        public Set<Integer> signers = new HashSet<>();
+        public int voteNumber;
     }
 }
